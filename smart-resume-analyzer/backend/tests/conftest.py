@@ -4,7 +4,8 @@ import tempfile
 
 # Configure the app before it is imported: an isolated SQLite DB and small limits.
 _DB_DIR = tempfile.mkdtemp()
-os.environ["DATABASE_URL"] = f"sqlite:///{_DB_DIR}/test.db"
+# Set TEST_DATABASE_URL to run the suite against PostgreSQL instead.
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", f"sqlite:///{_DB_DIR}/test.db")
 os.environ["MAX_UPLOAD_MB"] = "1"
 os.environ["MAX_PDF_PAGES"] = "3"
 

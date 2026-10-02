@@ -87,7 +87,7 @@ Indexes are on `user_id` in every child table and on `(resume_id, job_id)` in
 |---|---|---|
 | Curated skill taxonomy + `PhraseMatcher` instead of a learned skill NER | Deterministic and auditable. Every hit can be explained. | Recall is limited to the taxonomy. Unknown skills are missed. |
 | Three separate metrics, no composite score | A single score invites a "hire probability" reading and hides why it is high or low. | Users must read three numbers. |
-| TF-IDF fitted on just the two documents | No external corpus, no data leakage between users. | IDF is weak with two documents. It only separates shared terms from unique ones. Documented in `NLP_CONCEPTS.md`. |
+| TF-IDF with each sentence treated as a document for IDF | No external corpus, no data leakage between users. With sentences as documents, IDF can push down boilerplate terms. | IDF reflects only these two texts, not general English. Explained in `NLP_CONCEPTS.md`. |
 | NER is informational only | `en_core_web_sm` often labels tech terms (e.g. "Python") as ORG. | Organisations and dates are shown but never used in scoring. |
 | Store text, not files | Smaller attack surface, less personal data held. | The original file cannot be re-rendered. |
 | API-key auth | Simple and stateless, enough for a single-tenant demo. | No password reset. Replace with OIDC for multi-tenant production. |

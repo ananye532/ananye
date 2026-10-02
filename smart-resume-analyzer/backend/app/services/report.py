@@ -47,7 +47,7 @@ def to_markdown(analysis: dict, meta: dict) -> str:
         "",
     ]
     if s["missing_by_category"]:
-        lines += [f"- {cat}: {', '.join(names)}" for cat, names in s["missing_by_category"].items()]
+        lines += [f"- {cat}: {', '.join(names)}" for cat, names in sorted(s["missing_by_category"].items())]
     else:
         lines.append("- none")
     lines += ["", f"**In resume but not in JD:** {', '.join(s['resume_only']) or 'none'}", "", "## Top job-description keywords", ""]

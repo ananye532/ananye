@@ -81,3 +81,10 @@ def test_suggestions_flag_missing_sections_and_contact():
     a = analyze("Python developer. Built things with Docker. " * 5, JOB_TEXT)
     rules = {s["rule"] for s in a["suggestions"]}
     assert {"missing_section", "missing_email", "quantify_impact", "too_short"} <= rules
+
+
+def test_keywords_still_work_with_blank_fallback_pipeline():
+    import spacy
+
+    terms = [k.term for k in rank_keywords(JOB_TEXT, nlp=spacy.blank("en"))]
+    assert "kafka" in terms and "terraform" in terms

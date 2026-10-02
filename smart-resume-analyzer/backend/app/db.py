@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 from sqlalchemy import create_engine, event
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import URL, Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from .config import get_settings
@@ -11,8 +11,8 @@ class Base(DeclarativeBase):
     pass
 
 
-def make_engine(url: str) -> Engine:
-    if url.startswith("sqlite"):
+def make_engine(url: URL) -> Engine:
+    if url.get_backend_name() == "sqlite":
         engine = create_engine(url, connect_args={"check_same_thread": False})
 
         @event.listens_for(engine, "connect")
@@ -23,7 +23,7 @@ def make_engine(url: str) -> Engine:
     return create_engine(url, pool_pre_ping=True)
 
 
-engine = make_engine(get_settings().database_url)
+engine = make_engine(get_settings().sqlalchemy_url)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 

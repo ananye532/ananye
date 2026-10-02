@@ -4,7 +4,9 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints
 
 
 class UserCreate(BaseModel):
@@ -31,8 +33,9 @@ class ResumeOut(BaseModel):
 
 
 class JobCreate(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
-    company: str | None = Field(default=None, max_length=200)
+    # Whitespace is stripped before the length check, so "   " is rejected.
+    title: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
+    company: Annotated[str, StringConstraints(strip_whitespace=True, max_length=200)] | None = None
     description: str
 
 

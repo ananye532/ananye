@@ -45,6 +45,8 @@ def extract_text_from_pdf(data: bytes, max_pages: int = 10) -> ExtractedPDF:
             pages = [page.extract_text() or "" for page in pdf.pages]
     except PDFExtractionError:
         raise
+    except PDFPasswordIncorrect as exc:  # raised unwrapped by some pdfplumber/pdfminer versions
+        raise PDFExtractionError("encrypted_pdf", "Password-protected PDFs are not supported.") from exc
     except PdfminerException as exc:
         if exc.args and isinstance(exc.args[0], PDFPasswordIncorrect):
             raise PDFExtractionError("encrypted_pdf", "Password-protected PDFs are not supported.") from exc

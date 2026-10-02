@@ -47,6 +47,7 @@ async function request(path, { method = "GET", json, form, raw } = {}) {
 }
 
 export const api = {
+  config: () => request("/config"),
   register: (email) => request("/users", { method: "POST", json: { email } }),
   deleteAccount: () => request("/users/me", { method: "DELETE" }),
   uploadResume: (file) => {
@@ -61,7 +62,10 @@ export const api = {
     const res = await request(`/analyses/${id}/report?format=${format}`, { raw: true });
     const url = URL.createObjectURL(await res.blob());
     const a = Object.assign(document.createElement("a"), { href: url, download: `resume-analysis.${format}` });
+    document.body.appendChild(a); // Firefox needs the link in the DOM
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    // Revoking synchronously can cancel the download in browsers that start it on a later task.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   },
 };

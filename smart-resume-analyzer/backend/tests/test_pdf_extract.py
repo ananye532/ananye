@@ -46,3 +46,17 @@ def test_rejects_password_protected_pdf():
     with pytest.raises(PDFExtractionError) as e:
         extract_text_from_pdf(make_pdf(encrypt="s3cret"))
     assert e.value.code == "encrypted_pdf"
+
+
+def test_unwrapped_password_error_is_reported_as_encrypted(monkeypatch):
+    from pdfminer.pdfdocument import PDFPasswordIncorrect
+
+    import app.nlp.pdf_extract as mod
+
+    def _raise(*_args, **_kwargs):
+        raise PDFPasswordIncorrect()
+
+    monkeypatch.setattr(mod.pdfplumber, "open", _raise)
+    with pytest.raises(PDFExtractionError) as e:
+        extract_text_from_pdf(make_pdf())
+    assert e.value.code == "encrypted_pdf"

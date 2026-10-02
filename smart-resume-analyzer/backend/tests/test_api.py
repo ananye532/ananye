@@ -61,8 +61,20 @@ def test_upload_validation(client, auth):
         assert r.json()["detail"]["code"] == code
 
 
+def test_public_config(client):
+    assert client.get("/api/config").json() == {
+        "max_upload_mb": 1.0,
+        "max_pdf_pages": 3,
+        "min_job_chars": 50,
+        "max_job_chars": 20000,
+    }
+
+
 def test_job_validation(client, auth):
     h = auth()
+    assert client.post("/api/jobs", headers=h, json={"title": "   ", "description": JOB_TEXT}).status_code == 422
+    r = client.post("/api/jobs", headers=h, json={"title": "  Backend  ", "company": "  ", "description": JOB_TEXT})
+    assert (r.json()["title"], r.json()["company"]) == ("Backend", None)
     assert client.post("/api/jobs", headers=h, json={"title": "x", "description": "too short"}).status_code == 422
     r = client.post("/api/jobs", headers=h, json={"title": "Backend", "description": JOB_TEXT})
     assert r.status_code == 201

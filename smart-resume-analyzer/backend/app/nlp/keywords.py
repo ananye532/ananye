@@ -17,8 +17,9 @@ from dataclasses import dataclass
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from spacy.language import Language
 
-from .pipeline import get_nlp, has_lemmatizer
+from .pipeline import get_nlp, has_lemmatizer, has_tagger
 from .preprocessing import clean_text, phrases_from_doc, split_chunks
 from .skills import skill_token_indices
 
@@ -46,9 +47,11 @@ def _ngrams(phrases: Phrases, n_max: int = NGRAM_MAX) -> list[str]:
     return out
 
 
-def _chunk_phrases(text: str, keep_pos: frozenset[str] | None) -> list[Phrases]:
+def _chunk_phrases(text: str, keep_pos: frozenset[str] | None, nlp: Language | None = None) -> list[Phrases]:
     """Preprocess text into one list of phrases per sentence-like chunk."""
-    nlp = get_nlp()
+    nlp = nlp or get_nlp()
+    if keep_pos is not None and not has_tagger(nlp):
+        keep_pos = None  # blank fallback pipeline has no POS tags; filtering would drop every token
     use_lemma = has_lemmatizer(nlp)
     out: list[Phrases] = []
     for doc in nlp.pipe(split_chunks(clean_text(text))):
@@ -89,12 +92,12 @@ class Keyword:
     weight: float
 
 
-def rank_keywords(text: str, top_n: int = 25) -> list[Keyword]:
+def rank_keywords(text: str, top_n: int = 25, nlp: Language | None = None) -> list[Keyword]:
     """Top-N noun/adjective unigrams and bigrams of one document, by TF-IDF summed over its sentences.
 
     Weights are rescaled so the top keyword is 1.0.
     """
-    chunks = _chunk_phrases(text, KEYWORD_POS)
+    chunks = _chunk_phrases(text, KEYWORD_POS, nlp)
     if not chunks:
         return []
     vec = _vectorizer()

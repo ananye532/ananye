@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api, getKey, setKey } from "./api.js";
 import Results from "./Results.jsx";
 
-const MAX_MB = 5;
+// Used only until /api/config responds; the backend enforces the real limits.
+const DEFAULT_LIMITS = { max_upload_mb: 5, max_pdf_pages: 10, min_job_chars: 50, max_job_chars: 20000 };
 
 function Register({ onDone }) {
   const [email, setEmail] = useState("");
@@ -55,7 +56,7 @@ function Register({ onDone }) {
   );
 }
 
-function AnalyzeForm({ onResult }) {
+function AnalyzeForm({ onResult, limits }) {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
@@ -65,8 +66,8 @@ function AnalyzeForm({ onResult }) {
 
   function pickFile(f) {
     setError(null);
-    if (f && (!f.name.toLowerCase().endsWith(".pdf") || f.size > MAX_MB * 1024 * 1024)) {
-      setError(`Please choose a PDF under ${MAX_MB} MB.`);
+    if (f && (!f.name.toLowerCase().endsWith(".pdf") || f.size > limits.max_upload_mb * 1024 * 1024)) {
+      setError(`Please choose a PDF under ${limits.max_upload_mb} MB.`);
       return setFile(null);
     }
     setFile(f);
@@ -92,7 +93,7 @@ function AnalyzeForm({ onResult }) {
     <form className="card" onSubmit={submit}>
       <h2>1. Resume</h2>
       <label>
-        PDF file (max {MAX_MB} MB, text-based, not scanned)
+        PDF file (max {limits.max_upload_mb} MB, {limits.max_pdf_pages} pages, text-based, not scanned)
         <input type="file" accept="application/pdf,.pdf" required onChange={(e) => pickFile(e.target.files[0])} />
       </label>
 
@@ -111,8 +112,8 @@ function AnalyzeForm({ onResult }) {
         Paste the full job description
         <textarea
           required
-          minLength={50}
-          maxLength={20000}
+          minLength={limits.min_job_chars}
+          maxLength={limits.max_job_chars}
           rows={10}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -129,6 +130,11 @@ function AnalyzeForm({ onResult }) {
 export default function App() {
   const [authed, setAuthed] = useState(Boolean(getKey()));
   const [result, setResult] = useState(null);
+  const [limits, setLimits] = useState(DEFAULT_LIMITS);
+
+  useEffect(() => {
+    api.config().then(setLimits, () => {}); // keep defaults if the call fails
+  }, []);
 
   async function deleteAll() {
     if (!confirm("Permanently delete your account and all uploaded resumes, jobs and analyses?")) return;
@@ -170,7 +176,7 @@ export default function App() {
       ) : result ? (
         <Results {...result} />
       ) : (
-        <AnalyzeForm onResult={setResult} />
+        <AnalyzeForm onResult={setResult} limits={limits} />
       )}
     </main>
   );

@@ -20,8 +20,9 @@ def get_nlp(model: str = DEFAULT_MODEL) -> Language:
 
     The dependency parser is disabled because nothing here needs syntax trees,
     and that roughly halves processing time. If the model is not installed, a
-    blank English pipeline is returned instead: tokenization still works, but
-    lemmas and named entities are unavailable.
+    blank English pipeline is returned instead: tokenization and skill matching
+    still work, but lemmas, POS tags and named entities are unavailable, and
+    keyword ranking skips its POS filter.
     """
     try:
         return spacy.load(model, disable=["parser"])
@@ -32,6 +33,10 @@ def get_nlp(model: str = DEFAULT_MODEL) -> Language:
 
 def has_lemmatizer(nlp: Language) -> bool:
     return "lemmatizer" in nlp.pipe_names
+
+
+def has_tagger(nlp: Language) -> bool:
+    return "tagger" in nlp.pipe_names
 
 
 def has_ner(nlp: Language) -> bool:

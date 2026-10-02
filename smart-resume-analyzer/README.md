@@ -39,13 +39,21 @@ cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
 python -m spacy download en_core_web_sm
-uvicorn app.main:app --reload            # SQLite by default; set DATABASE_URL for Postgres
+uvicorn app.main:app --reload            # SQLite by default; see "Database settings" below
 
 # Frontend (separate terminal)
 cd frontend
 npm install
 npm run dev                               # http://localhost:5173, proxies /api to :8000
 ```
+
+### Database settings
+
+The backend picks its database in this order:
+
+1. `DATABASE_URL`, a full SQLAlchemy URL. Special characters in the password must be URL-encoded.
+2. `POSTGRES_HOST` plus `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD` and `POSTGRES_DB`. These are used by Docker Compose, and the password is escaped automatically.
+3. Neither set: SQLite at `./dev.db`.
 
 ## Tests
 

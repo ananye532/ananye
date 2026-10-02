@@ -55,6 +55,18 @@ def health() -> dict:
     return {"status": "ok"}
 
 
+@router.get("/config")
+def public_config() -> dict:
+    """Limits the frontend needs for client-side hints. The backend still enforces them."""
+    s = get_settings()
+    return {
+        "max_upload_mb": s.max_upload_mb,
+        "max_pdf_pages": s.max_pdf_pages,
+        "min_job_chars": s.min_job_chars,
+        "max_job_chars": s.max_job_chars,
+    }
+
+
 # Users --------------------------------------------------------------------
 
 
@@ -141,8 +153,8 @@ def create_job(body: JobCreate, user: User = Depends(current_user), db: Session 
         )
     job = Job(
         user_id=user.id,
-        title=body.title.strip(),
-        company=(body.company or "").strip() or None,
+        title=body.title,
+        company=body.company or None,
         description=description,
         skills=[h.to_dict() for h in extract_skills(description).values()],
     )

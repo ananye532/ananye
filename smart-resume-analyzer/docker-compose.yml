@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: resume_analyzer
+      POSTGRES_USER: resume_analyzer
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resume_analyzer -d resume_analyzer"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # Not published to the host: only reachable on the compose network.
+
+  backend:
+    build: ./backend
+    environment:
+      # Passed as separate parts so special characters in the password need no URL-encoding.
+      POSTGRES_HOST: db
+      POSTGRES_USER: resume_analyzer
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: resume_analyzer
+      CORS_ORIGINS: '["http://localhost:8080"]'
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-5}
+      MAX_PDF_PAGES: ${MAX_PDF_PAGES:-10}
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:

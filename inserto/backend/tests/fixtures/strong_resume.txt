@@ -1,0 +1,36 @@
+JORDAN LEE
+San Francisco, CA | jordan.lee@example.com | (415) 555-0142 | linkedin.com/in/jordanlee | github.com/jlee
+
+SUMMARY
+Backend engineer with 6 years of experience building scalable Python and Go services on AWS. Led migrations that cut infrastructure cost by 38% and improved p99 latency by 45%.
+
+EXPERIENCE
+Senior Software Engineer | Stripe
+Jan 2022 - Present
+• Led the redesign of the payouts ledger in Go and PostgreSQL, reducing reconciliation errors by 72% across 4M daily transactions
+• Architected an event-driven pipeline with Kafka and Kubernetes that scaled throughput from 2k to 15k events/sec
+• Mentored 5 engineers and introduced a code review rubric adopted by 3 teams
+• Cut AWS spend by $1.2M annually by right-sizing EC2 fleets and moving batch jobs to spot instances
+
+Software Engineer, Dropbox
+Jun 2019 - Dec 2021
+• Built REST APIs in Python and FastAPI serving 30M requests/day with 99.99% availability
+• Reduced CI pipeline time from 40 to 12 minutes by parallelizing test suites with GitHub Actions
+• Implemented Redis caching that decreased median response time by 60%
+
+Software Engineering Intern | Microsoft
+May 2018 - Aug 2018
+• Developed a telemetry dashboard in React and TypeScript used by 40 engineers
+
+EDUCATION
+University of California, Berkeley
+B.S. in Computer Science, 2019 | GPA: 3.8/4.0
+
+SKILLS
+Languages: Python, Go, SQL, TypeScript, Bash
+Infrastructure: AWS, Docker, Kubernetes, Terraform, CI/CD
+Data: PostgreSQL, Redis, Kafka
+Practices: System Design, Unit Testing, Code Review
+
+CERTIFICATIONS
+AWS Certified Solutions Architect - Associate (2023)

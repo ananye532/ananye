@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Design tokens. Components use semantic roles, never raw hex. */
+:root {
+  color-scheme: light;
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f4f4f2;
+  --surface-3: #ebebe8;
+  --border: #e6e5e1;
+  --border-strong: #d4d3ce;
+  --fg: #111113;
+  --fg-2: #4b4a46;
+  --fg-3: #7a7974;
+  --primary: #111113;
+  --primary-fg: #ffffff;
+  --accent: #2a78d6;
+  --accent-soft: #e8f0fb;
+  --accent-fg: #1c5cab;
+  --ring: #2a78d6;
+  /* chart roles (validated reference palette) */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  /* status — always paired with icon + label */
+  --good: #0ca30c;
+  --good-fg: #006300;
+  --good-soft: #e7f5e7;
+  --warn: #fab219;
+  --warn-fg: #8a5a00;
+  --warn-soft: #fdf3dc;
+  --serious: #ec835a;
+  --bad: #d03b3b;
+  --bad-fg: #a82727;
+  --bad-soft: #fbeaea;
+  --shadow: 0 1px 2px rgb(17 17 19 / 0.04), 0 1px 1px rgb(17 17 19 / 0.03);
+  --shadow-lg: 0 12px 32px -12px rgb(17 17 19 / 0.18), 0 2px 6px rgb(17 17 19 / 0.05);
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0f0f10;
+  --surface: #161617;
+  --surface-2: #1d1d1f;
+  --surface-3: #262628;
+  --border: #2a2a2c;
+  --border-strong: #38383b;
+  --fg: #f4f4f3;
+  --fg-2: #c3c2b7;
+  --fg-3: #8d8c86;
+  --primary: #f4f4f3;
+  --primary-fg: #111113;
+  --accent: #3987e5;
+  --accent-soft: #15253b;
+  --accent-fg: #86b6ef;
+  --ring: #3987e5;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --good: #0ca30c;
+  --good-fg: #4cc94c;
+  --good-soft: #10261a;
+  --warn: #fab219;
+  --warn-fg: #f5c35a;
+  --warn-soft: #2b2312;
+  --serious: #ec835a;
+  --bad: #d03b3b;
+  --bad-fg: #f08080;
+  --bad-soft: #2d1616;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 16px 40px -12px rgb(0 0 0 / 0.6);
+}
+
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-fg: var(--accent-fg);
+  --color-ring: var(--ring);
+  --color-good: var(--good);
+  --color-good-fg: var(--good-fg);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-fg: var(--warn-fg);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-fg: var(--bad-fg);
+  --color-bad-soft: var(--bad-soft);
+  --shadow-card: var(--shadow);
+  --shadow-pop: var(--shadow-lg);
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to { background-position: 400px 0; }
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+  ::selection { background: var(--accent-soft); color: var(--fg); }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+.bg-grid {
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 30%, transparent 75%);
+}

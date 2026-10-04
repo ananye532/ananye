@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: inserto
+      POSTGRES_DB: inserto
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inserto"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: inserto
+      POSTGRES_DB: inserto
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      ENVIRONMENT: production
+      AI_PROVIDER: ${AI_PROVIDER:-none}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-5-5}
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs: [/tmp]
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on: [api]
+
+volumes:
+  pgdata:
